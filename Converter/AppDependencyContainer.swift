@@ -14,7 +14,7 @@ final class AppDependencyContainer {
   
   init() {
     func makeApiClient() -> ApiClientType {
-      return undefined()
+      return DemoApiClient()
     }
     
     func makeAccountDataStore() -> AccountDataStoreType {
