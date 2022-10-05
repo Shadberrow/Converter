@@ -18,7 +18,7 @@ final class AppDependencyContainer {
     }
     
     func makeAccountDataStore() -> AccountDataStoreType {
-      return undefined()
+      return DemoAccountDataStore()
     }
     
     self.sharedApiClient = makeApiClient()

@@ -8,5 +8,5 @@
 import Foundation
 
 protocol AccountDataStoreType {
-  
+  func loadAccount() -> Account
 }
