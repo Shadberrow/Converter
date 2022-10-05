@@ -38,6 +38,11 @@ final class AppDependencyContainer {
   }
   
   func makeConverterViewModel() -> ConverterViewModel {
-    return ConverterViewModel()
+    let service = makeConverterService()
+    return ConverterViewModel(servie: service)
+  }
+  
+  func makeConverterService() -> ConverterServiceType {
+    return DemoConverterService(dataStore: sharedAccountDataStore)
   }
 }
