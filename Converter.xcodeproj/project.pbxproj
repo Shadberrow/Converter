@@ -18,6 +18,7 @@
 		6DE581E028EE3DC300FAE6E9 /* AppDependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581DF28EE3DC300FAE6E9 /* AppDependencyContainer.swift */; };
 		6DE581E228EE3DFE00FAE6E9 /* ApiClientType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581E128EE3DFE00FAE6E9 /* ApiClientType.swift */; };
 		6DE581E428EE3E6500FAE6E9 /* Undefined.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581E328EE3E6500FAE6E9 /* Undefined.swift */; };
+		6DE581E728EE401900FAE6E9 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581E628EE401900FAE6E9 /* Balance.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		6DE581DF28EE3DC300FAE6E9 /* AppDependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencyContainer.swift; sourceTree = "<group>"; };
 		6DE581E128EE3DFE00FAE6E9 /* ApiClientType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientType.swift; sourceTree = "<group>"; };
 		6DE581E328EE3E6500FAE6E9 /* Undefined.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Undefined.swift; sourceTree = "<group>"; };
+		6DE581E628EE401900FAE6E9 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				6DE581DB28EE385300FAE6E9 /* Account.swift */,
+				6DE581E628EE401900FAE6E9 /* Balance.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 				6DE581C328EE364800FAE6E9 /* ViewController.swift in Sources */,
 				6DE581DA28EE380F00FAE6E9 /* NiblessViewController.swift in Sources */,
 				6DE581BF28EE364800FAE6E9 /* AppDelegate.swift in Sources */,
+				6DE581E728EE401900FAE6E9 /* Balance.swift in Sources */,
 				6DE581C128EE364800FAE6E9 /* SceneDelegate.swift in Sources */,
 				6DE581DE28EE38C400FAE6E9 /* AccountDataStoreType.swift in Sources */,
 				6DE581E428EE3E6500FAE6E9 /* Undefined.swift in Sources */,

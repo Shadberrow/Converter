@@ -14,13 +14,3 @@ class Account {
     self.balances = balances
   }
 }
-
-class Balance {
-  var currency: String
-  var amount: Double
-  
-  init(currency: String, amount: Double) {
-    self.currency = currency
-    self.amount = amount
-  }
-}
