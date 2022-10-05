@@ -5,7 +5,7 @@
 //  Created by Yevhenii on 10/5/22.
 //
 
-import Foundation
+import UIKit
 
 final class AppDependencyContainer {
   
@@ -25,6 +25,13 @@ final class AppDependencyContainer {
     self.sharedAccountDataStore = makeAccountDataStore()
   }
   
+  func makeRootViewController() -> UIViewController {
+    let viewController = makeConverterViewController()
+    return UINavigationController(rootViewController: viewController)
+  }
   
+  func makeConverterViewController() -> UIViewController {
+    return ViewController()
+  }
   
 }
