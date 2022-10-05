@@ -8,10 +8,10 @@
 import Foundation
 
 class Balance {
-  var currency: String
+  var currency: Currency
   var amount: Double
   
-  init(currency: String, amount: Double) {
+  init(currency: Currency, amount: Double) {
     self.currency = currency
     self.amount = amount
   }
