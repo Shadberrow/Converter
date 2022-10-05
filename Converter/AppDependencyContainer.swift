@@ -31,7 +31,13 @@ final class AppDependencyContainer {
   }
   
   func makeConverterViewController() -> UIViewController {
-    return ViewController()
+    let viewModel = makeConverterViewModel()
+    let viewController = ConverterViewController()
+    viewController.viewModel = viewModel
+    return viewController
   }
   
+  func makeConverterViewModel() -> ConverterViewModel {
+    return ConverterViewModel()
+  }
 }
