@@ -12,6 +12,12 @@
 		6DE581C328EE364800FAE6E9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581C228EE364800FAE6E9 /* ViewController.swift */; };
 		6DE581C828EE364C00FAE6E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6DE581C728EE364C00FAE6E9 /* Assets.xcassets */; };
 		6DE581CB28EE364C00FAE6E9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DE581C928EE364C00FAE6E9 /* LaunchScreen.storyboard */; };
+		6DE581DA28EE380F00FAE6E9 /* NiblessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581D928EE380F00FAE6E9 /* NiblessViewController.swift */; };
+		6DE581DC28EE385300FAE6E9 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581DB28EE385300FAE6E9 /* Account.swift */; };
+		6DE581DE28EE38C400FAE6E9 /* AccountDataStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581DD28EE38C400FAE6E9 /* AccountDataStoreType.swift */; };
+		6DE581E028EE3DC300FAE6E9 /* AppDependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581DF28EE3DC300FAE6E9 /* AppDependencyContainer.swift */; };
+		6DE581E228EE3DFE00FAE6E9 /* ApiClientType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581E128EE3DFE00FAE6E9 /* ApiClientType.swift */; };
+		6DE581E428EE3E6500FAE6E9 /* Undefined.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE581E328EE3E6500FAE6E9 /* Undefined.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +28,12 @@
 		6DE581C728EE364C00FAE6E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6DE581CA28EE364C00FAE6E9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6DE581CC28EE364C00FAE6E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6DE581D928EE380F00FAE6E9 /* NiblessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiblessViewController.swift; sourceTree = "<group>"; };
+		6DE581DB28EE385300FAE6E9 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		6DE581DD28EE38C400FAE6E9 /* AccountDataStoreType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataStoreType.swift; sourceTree = "<group>"; };
+		6DE581DF28EE3DC300FAE6E9 /* AppDependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencyContainer.swift; sourceTree = "<group>"; };
+		6DE581E128EE3DFE00FAE6E9 /* ApiClientType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientType.swift; sourceTree = "<group>"; };
+		6DE581E328EE3E6500FAE6E9 /* Undefined.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Undefined.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,8 +66,13 @@
 		6DE581BD28EE364800FAE6E9 /* Converter */ = {
 			isa = PBXGroup;
 			children = (
+				6DE581DF28EE3DC300FAE6E9 /* AppDependencyContainer.swift */,
 				6DE581D228EE374A00FAE6E9 /* App */,
 				6DE581C228EE364800FAE6E9 /* ViewController.swift */,
+				6DE581E528EE3EC600FAE6E9 /* Utilities */,
+				6DE581D628EE37E000FAE6E9 /* DataLayer */,
+				6DE581D528EE37D100FAE6E9 /* Reusable */,
+				6DE581D428EE37C900FAE6E9 /* Extensions */,
 				6DE581D328EE375D00FAE6E9 /* Resources */,
 			);
 			path = Converter;
@@ -78,6 +95,55 @@
 				6DE581CC28EE364C00FAE6E9 /* Info.plist */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		6DE581D428EE37C900FAE6E9 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		6DE581D528EE37D100FAE6E9 /* Reusable */ = {
+			isa = PBXGroup;
+			children = (
+				6DE581D928EE380F00FAE6E9 /* NiblessViewController.swift */,
+			);
+			path = Reusable;
+			sourceTree = "<group>";
+		};
+		6DE581D628EE37E000FAE6E9 /* DataLayer */ = {
+			isa = PBXGroup;
+			children = (
+				6DE581E128EE3DFE00FAE6E9 /* ApiClientType.swift */,
+				6DE581D828EE37EE00FAE6E9 /* Repositories */,
+				6DE581D728EE37E800FAE6E9 /* Model */,
+			);
+			path = DataLayer;
+			sourceTree = "<group>";
+		};
+		6DE581D728EE37E800FAE6E9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				6DE581DB28EE385300FAE6E9 /* Account.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		6DE581D828EE37EE00FAE6E9 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				6DE581DD28EE38C400FAE6E9 /* AccountDataStoreType.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		6DE581E528EE3EC600FAE6E9 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				6DE581E328EE3E6500FAE6E9 /* Undefined.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,9 +216,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6DE581DC28EE385300FAE6E9 /* Account.swift in Sources */,
+				6DE581E228EE3DFE00FAE6E9 /* ApiClientType.swift in Sources */,
+				6DE581E028EE3DC300FAE6E9 /* AppDependencyContainer.swift in Sources */,
 				6DE581C328EE364800FAE6E9 /* ViewController.swift in Sources */,
+				6DE581DA28EE380F00FAE6E9 /* NiblessViewController.swift in Sources */,
 				6DE581BF28EE364800FAE6E9 /* AppDelegate.swift in Sources */,
 				6DE581C128EE364800FAE6E9 /* SceneDelegate.swift in Sources */,
+				6DE581DE28EE38C400FAE6E9 /* AccountDataStoreType.swift in Sources */,
+				6DE581E428EE3E6500FAE6E9 /* Undefined.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
