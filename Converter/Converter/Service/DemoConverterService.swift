@@ -18,4 +18,8 @@ class DemoConverterService: ConverterServiceType {
   func loadAccount() -> Account {
     return dataStore.loadAccount()
   }
+  
+  func exchange(amount: Double, fromCurrency: String, toCurrency: String) -> Double {
+    return 104
+  }
 }

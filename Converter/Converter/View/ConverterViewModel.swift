@@ -14,8 +14,10 @@ class ConverterViewModel {
   var didLoadAccount: ((Account) -> Void)?
   var sellCurrency: ((Currency) -> Void)?
   var buyCurrency: ((Currency) -> Void)?
+  var buyAmount: ((Double) -> Void)?
   
   private var sellBalance: Balance!
+  private var buyBalance: Balance!
   
   let service: ConverterServiceType
   
@@ -33,5 +35,22 @@ class ConverterViewModel {
   
   func setSellBalance(_ balance: Balance) {
     sellBalance = balance
+  }
+  
+  func setBuyBalance(_ balance: Balance) {
+    buyBalance = balance
+  }
+  
+  func sellInputChanged(input: String?) {
+    guard let input = input else { return }
+    let amount = (input as NSString).doubleValue
+    
+    let exchanged = service.exchange(
+      amount: amount,
+      fromCurrency: sellBalance.currency.code,
+      toCurrency: account.defauleBuyCurrency.code
+    )
+    
+    buyAmount?(exchanged)
   }
 }

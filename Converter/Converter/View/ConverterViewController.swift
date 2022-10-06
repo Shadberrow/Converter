@@ -15,6 +15,10 @@ class ConverterViewController: UIViewController {
   // MARK: - Subviews
   private var balancesStackView: UIStackView!
   private var sellCurrencyButton: UIButton!
+  private var sellCurrencyTextField: UITextField!
+  
+  private var buyCurrencyButton: UIButton!
+  private var buyCurrencyTextField: UITextField!
   
   // MARK: - Lifecycle
   override func viewDidLoad() {
@@ -46,11 +50,35 @@ class ConverterViewController: UIViewController {
     sellCurrencyButton.tintColor = .white
     sellCurrencyButton.setTitle(" - ", for: .normal)
     sellCurrencyButton.showsMenuAsPrimaryAction = true
+    
+    sellCurrencyTextField = UITextField()
+    sellCurrencyTextField.translatesAutoresizingMaskIntoConstraints = false
+    sellCurrencyTextField.placeholder = "0.00"
+    sellCurrencyTextField.keyboardType = .numberPad
+    sellCurrencyTextField.textAlignment = .center
+    sellCurrencyTextField.addTarget(self, action: #selector(handleTextInput), for: .editingChanged)
+    
+    buyCurrencyButton = UIButton(type: .system)
+    buyCurrencyButton.translatesAutoresizingMaskIntoConstraints = false
+    buyCurrencyButton.backgroundColor = .systemPurple
+    buyCurrencyButton.layer.cornerRadius = 8
+    buyCurrencyButton.tintColor = .white
+    buyCurrencyButton.setTitle(" - ", for: .normal)
+    buyCurrencyButton.showsMenuAsPrimaryAction = true
+    
+    buyCurrencyTextField = UITextField()
+    buyCurrencyTextField.translatesAutoresizingMaskIntoConstraints = false
+    buyCurrencyTextField.placeholder = "0.00"
+    buyCurrencyTextField.isUserInteractionEnabled = false
+    buyCurrencyTextField.textAlignment = .center
   }
   
   private func setupHierarchy() {
     view.addSubview(balancesStackView)
     view.addSubview(sellCurrencyButton)
+    view.addSubview(sellCurrencyTextField)
+    view.addSubview(buyCurrencyButton)
+    view.addSubview(buyCurrencyTextField)
   }
   
   private func setupConstraints() {
@@ -62,7 +90,22 @@ class ConverterViewController: UIViewController {
       sellCurrencyButton.topAnchor.constraint(equalTo: balancesStackView.bottomAnchor, constant: 28),
       sellCurrencyButton.leadingAnchor.constraint(equalTo: balancesStackView.leadingAnchor),
       sellCurrencyButton.widthAnchor.constraint(equalTo: balancesStackView.widthAnchor, multiplier: 0.35),
-      sellCurrencyButton.heightAnchor.constraint(equalToConstant: 45)
+      sellCurrencyButton.heightAnchor.constraint(equalToConstant: 45),
+      
+      sellCurrencyTextField.topAnchor.constraint(equalTo: sellCurrencyButton.bottomAnchor, constant: 8),
+      sellCurrencyTextField.leadingAnchor.constraint(equalTo: sellCurrencyButton.leadingAnchor),
+      sellCurrencyTextField.trailingAnchor.constraint(equalTo: sellCurrencyButton.trailingAnchor),
+      sellCurrencyTextField.heightAnchor.constraint(equalToConstant: 45),
+      
+      buyCurrencyButton.topAnchor.constraint(equalTo: balancesStackView.bottomAnchor, constant: 28),
+      buyCurrencyButton.trailingAnchor.constraint(equalTo: balancesStackView.trailingAnchor),
+      buyCurrencyButton.widthAnchor.constraint(equalTo: balancesStackView.widthAnchor, multiplier: 0.35),
+      buyCurrencyButton.heightAnchor.constraint(equalToConstant: 45),
+      
+      buyCurrencyTextField.topAnchor.constraint(equalTo: buyCurrencyButton.bottomAnchor, constant: 8),
+      buyCurrencyTextField.leadingAnchor.constraint(equalTo: buyCurrencyButton.leadingAnchor),
+      buyCurrencyTextField.trailingAnchor.constraint(equalTo: buyCurrencyButton.trailingAnchor),
+      buyCurrencyTextField.heightAnchor.constraint(equalToConstant: 45)
     ])
   }
   
@@ -70,17 +113,30 @@ class ConverterViewController: UIViewController {
   private func bind() {
     viewModel.didLoadAccount = { [weak self] account in
       self?.generateBalancesView(for: account)
-      self?.generateMenuForSellCurrencyButton(for: account)
+      self?.generateMenuForCurrencyButton(for: account, type: .sell)
+      self?.generateMenuForCurrencyButton(for: account, type: .buy)
     }
     
     viewModel.sellCurrency = { [weak self] currency in
       self?.sellCurrencyButton.setTitle(currency.code, for: .normal)
     }
     
+    viewModel.buyCurrency = { [weak self] currency in
+      self?.buyCurrencyButton.setTitle(currency.code, for: .normal)
+    }
+    
+    viewModel.buyAmount = { [weak self] exchanged in
+      self?.buyCurrencyTextField.text = "\(exchanged)"
+    }
+    
     viewModel.loadData()
   }
   
   private func generateBalancesView(for account: Account) {
+    balancesStackView.subviews.forEach { view in
+      view.removeFromSuperview()
+    }
+    
     account.balances
       .prefix(3)
       .forEach { balancesStackView.addArrangedSubview(makeBalanceLabel(for: $0)) }
@@ -92,21 +148,42 @@ class ConverterViewController: UIViewController {
     return view
   }
   
-  private func generateMenuForSellCurrencyButton(for account: Account) {
+  private func generateMenuForCurrencyButton(for account: Account, type: ExchangeType) {
     let title = "Select Currency"
-    let children = account.balances.map { createMenuAction(for: $0) }
+    let children = account.balances.map { createMenuAction(for: $0, type: type) }
+    let menu = UIMenu(title: title, image: nil, identifier: nil, options: [], children: children)
     
-    sellCurrencyButton.menu = UIMenu(title: title, image: nil, identifier: nil, options: [], children: children)
-  }
-  
-  private func createMenuAction(for balance: Balance) -> UIAction {
-    return UIAction(title: balance.currency.code) { [weak self] _ in
-      self?.didSelect(balance: balance)
+    switch type {
+    case .sell:
+      sellCurrencyButton.menu = menu
+    case .buy:
+      buyCurrencyButton.menu = menu
     }
   }
   
-  private func didSelect(balance: Balance) {
-    viewModel.setSellBalance(balance)
-    sellCurrencyButton.setTitle(balance.currency.code, for: .normal)
+  private func createMenuAction(for balance: Balance, type: ExchangeType) -> UIAction {
+    return UIAction(title: balance.currency.code) { [weak self] _ in
+      self?.didSelect(balance: balance, type: type)
+    }
   }
+  
+  private func didSelect(balance: Balance, type: ExchangeType) {
+    viewModel.setSellBalance(balance)
+    
+    switch type {
+    case .sell:
+      sellCurrencyButton.setTitle(balance.currency.code, for: .normal)
+    case .buy:
+      buyCurrencyButton.setTitle(balance.currency.code, for: .normal)
+    }
+  }
+  
+  @objc private func handleTextInput(_ sender: UITextField) {
+    viewModel.sellInputChanged(input: sender.text)
+  }
+}
+
+enum ExchangeType {
+  case sell
+  case buy
 }
