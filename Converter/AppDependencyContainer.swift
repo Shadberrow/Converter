@@ -24,7 +24,7 @@ final class AppDependencyContainer {
     
     func makeExchangeFeeCalculator() -> ExchangeFeeCalculator {
       let calculator = ExchangeFeeCalculator()
-        .addRules(.standardFee(percent: 0.7), .firstNFree(count: 3))
+        .addRules(.standardFee(percent: 0.7), .firstNFree(count: 5))
       return calculator
     }
     

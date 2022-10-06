@@ -17,12 +17,14 @@ class ConverterViewModel {
   var buyAmount: ((Double) -> Void)?
   var isSaveEnabled: ((Bool) -> Void)?
   var showAlert: ((ConversionResult) -> Void)?
+  var resultDidChange: ((ConversionResult) -> Void)?
   
   private var sellBalance: Balance!
   private var buyBalance: Balance!
   private var sellExchanged: Double = 0
   private var buyExchanged: Double = 0
   private var exchangeFee: Double = 0
+  private var conversionResult: ConversionResult?
   
   let service: ConverterServiceType
   
@@ -74,12 +76,11 @@ class ConverterViewModel {
     checkSaveEnabledState()
     service.incrementConversionsCount()
     
-    let conversionResult = ConversionResult(
-      sellAmount: sellExchanged, buyAmount: buyExchanged,
-      fromCurrency: sellBalance.currency, toCurrency: buyBalance.currency,
-      exchangeFee: exchangeFee
-    )
+    updateConversionResult()
+    
+    guard let conversionResult = conversionResult else { return }
     showAlert?(conversionResult)
+    loadExchage()
   }
   
   private func loadExchage() {
@@ -90,17 +91,30 @@ class ConverterViewModel {
         toCurrency: buyBalance.currency.code
       )
       
+      exchangeFee = service.getFee(exchangeAmount: sellExchanged)
       buyExchanged = exchanged
       
       DispatchQueue.main.async {
         self.checkSaveEnabledState()
         self.buyAmount?(exchanged)
+        
+        self.updateConversionResult()
+        guard let conversionResult = self.conversionResult else { return }
+        self.resultDidChange?(conversionResult)
       }
     }
   }
   
   private func checkSaveEnabledState() {
     isSaveEnabled?(sellBalance.amount >= (sellExchanged + exchangeFee) && sellBalance.amount != 0)
+  }
+  
+  private func updateConversionResult() {
+    conversionResult = ConversionResult(
+      sellAmount: sellExchanged, buyAmount: buyExchanged,
+      fromCurrency: sellBalance.currency, toCurrency: buyBalance.currency,
+      exchangeFee: exchangeFee
+    )
   }
 }
 

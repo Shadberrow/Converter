@@ -23,6 +23,7 @@ class ConverterViewController: UIViewController {
   private var activityIndicatorView: UIActivityIndicatorView!
   
   private var saveButton: UIButton!
+  private var descriptionLabel: UILabel!
   
   // MARK: - Lifecycle
   override func viewDidLoad() {
@@ -87,6 +88,10 @@ class ConverterViewController: UIViewController {
     saveButton.backgroundColor = .systemBlue
     saveButton.tintColor = .white
     saveButton.layer.cornerRadius = 8
+    
+    descriptionLabel = UILabel()
+    descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+    descriptionLabel.numberOfLines = 2
   }
   
   private func setupHierarchy() {
@@ -97,6 +102,7 @@ class ConverterViewController: UIViewController {
     view.addSubview(buyCurrencyTextField)
     view.addSubview(activityIndicatorView)
     view.addSubview(saveButton)
+    view.addSubview(descriptionLabel)
   }
   
   private func setupConstraints() {
@@ -131,7 +137,11 @@ class ConverterViewController: UIViewController {
       saveButton.topAnchor.constraint(equalTo: sellCurrencyTextField.bottomAnchor, constant: 28),
       saveButton.leadingAnchor.constraint(equalTo: balancesStackView.leadingAnchor),
       saveButton.trailingAnchor.constraint(equalTo: balancesStackView.trailingAnchor),
-      saveButton.heightAnchor.constraint(equalToConstant: 45)
+      saveButton.heightAnchor.constraint(equalToConstant: 45),
+      
+      descriptionLabel.topAnchor.constraint(equalTo: saveButton.bottomAnchor, constant: 20),
+      descriptionLabel.leadingAnchor.constraint(equalTo: saveButton.leadingAnchor),
+      descriptionLabel.trailingAnchor.constraint(equalTo: saveButton.trailingAnchor)
     ])
   }
   
@@ -163,6 +173,14 @@ class ConverterViewController: UIViewController {
     
     viewModel.showAlert = { [weak self] result in
       self?.showSaveAlert(result: result)
+    }
+    
+    viewModel.resultDidChange = { [weak self] result in
+      let feeText = result.exchangeFee != 0 ? "\nFee: \(result.exchangeFee) \(result.fromCurrency.code)" : ""
+      
+      self?.descriptionLabel.text = "Sell: \(result.sellAmount) \(result.fromCurrency.code) | "
+      + "Receive: \(result.buyAmount) \(result.toCurrency.code)"
+      + feeText
     }
     
     viewModel.loadData()
