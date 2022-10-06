@@ -47,34 +47,14 @@ class ConverterViewController: UIViewController {
     balancesStackView.axis = .horizontal
     balancesStackView.distribution = .equalCentering
     
-    sellCurrencyButton = UIButton(type: .system)
-    sellCurrencyButton.translatesAutoresizingMaskIntoConstraints = false
-    sellCurrencyButton.backgroundColor = .systemBlue
-    sellCurrencyButton.layer.cornerRadius = 8
-    sellCurrencyButton.tintColor = .white
-    sellCurrencyButton.setTitle(" - ", for: .normal)
-    sellCurrencyButton.showsMenuAsPrimaryAction = true
+    sellCurrencyButton = generateCurrencyButton()
     
-    sellCurrencyTextField = UITextField()
-    sellCurrencyTextField.translatesAutoresizingMaskIntoConstraints = false
-    sellCurrencyTextField.placeholder = "0.00"
-    sellCurrencyTextField.keyboardType = .decimalPad
-    sellCurrencyTextField.textAlignment = .center
+    sellCurrencyTextField = generateCurrencyTextField()
     sellCurrencyTextField.addTarget(self, action: #selector(handleTextInput), for: .editingChanged)
     
-    buyCurrencyButton = UIButton(type: .system)
-    buyCurrencyButton.translatesAutoresizingMaskIntoConstraints = false
-    buyCurrencyButton.backgroundColor = .systemBlue
-    buyCurrencyButton.layer.cornerRadius = 8
-    buyCurrencyButton.tintColor = .white
-    buyCurrencyButton.setTitle(" - ", for: .normal)
-    buyCurrencyButton.showsMenuAsPrimaryAction = true
+    buyCurrencyButton = generateCurrencyButton()
     
-    buyCurrencyTextField = UITextField()
-    buyCurrencyTextField.translatesAutoresizingMaskIntoConstraints = false
-    buyCurrencyTextField.placeholder = "0.00"
-    buyCurrencyTextField.isUserInteractionEnabled = false
-    buyCurrencyTextField.textAlignment = .center
+    buyCurrencyTextField = generateCurrencyTextField()
     
     activityIndicatorView = UIActivityIndicatorView()
     activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -145,6 +125,64 @@ class ConverterViewController: UIViewController {
     ])
   }
   
+  // View Generators
+  private func generateCurrencyButton() -> UIButton {
+    let button = UIButton(type: .system)
+    button.translatesAutoresizingMaskIntoConstraints = false
+    button.backgroundColor = .systemBlue
+    button.layer.cornerRadius = 8
+    button.tintColor = .white
+    button.setTitle(" - ", for: .normal)
+    button.showsMenuAsPrimaryAction = true
+    return button
+  }
+  
+  private func generateCurrencyTextField() -> UITextField {
+    let textField = UITextField()
+    textField.translatesAutoresizingMaskIntoConstraints = false
+    textField.placeholder = "0.00"
+    textField.isUserInteractionEnabled = false
+    textField.textAlignment = .center
+    return textField
+  }
+  
+  private func generateBalanceLabel(for balance: Balance) -> UIView {
+    let amount = "\((balance.amount * 100).rounded(.toNearestOrEven) / 100)"
+    let view = UILabel()
+    view.text = balance.currency.code + " - " + amount
+    return view
+  }
+  
+  private func generateMenuForCurrencyButton(for account: Account, type: ExchangeType) {
+    let title = "Select Currency"
+    let children = account.balances.map { generateMenuAction(for: $0, type: type) }
+    let menu = UIMenu(title: title, image: nil, identifier: nil, options: [], children: children)
+    
+    switch type {
+    case .sell:
+      sellCurrencyButton.menu = menu
+    case .buy:
+      buyCurrencyButton.menu = menu
+    }
+  }
+  
+  private func generateMenuAction(for balance: Balance, type: ExchangeType) -> UIAction {
+    return UIAction(title: balance.currency.code) { [weak self] _ in
+      guard let self = self else { return }
+      self.didSelect(balance: balance, type: type)
+    }
+  }
+  
+  private func generateBalancesView(for account: Account) {
+    balancesStackView.subviews.forEach { view in
+      view.removeFromSuperview()
+    }
+    
+    account.balances
+      .prefix(3)
+      .forEach { balancesStackView.addArrangedSubview(generateBalanceLabel(for: $0)) }
+  }
+  
   // MARK: - ViewModel Bind
   private func bind() {
     viewModel.didLoadAccount = { [weak self] account in
@@ -183,58 +221,13 @@ class ConverterViewController: UIViewController {
     
     viewModel.resultDidChange = { [weak self] result in
       guard let self = self else { return }
-      
-      if result.sellAmount == 0 {
-        self.descriptionLabel.text = ""
-      } else {
-        let feeText = result.exchangeFee != 0 ? "\nFee: \(result.exchangeFee) \(result.fromCurrency.code)" : ""
-        
-        self.descriptionLabel.text = "Sell: \(result.sellAmount) \(result.fromCurrency.code) | "
-        + "Receive: \(result.buyAmount) \(result.toCurrency.code)"
-        + feeText
-      }
+      self.descriptionLabel.text = result.generateText()
     }
     
     viewModel.loadData()
   }
   
-  private func generateBalancesView(for account: Account) {
-    balancesStackView.subviews.forEach { view in
-      view.removeFromSuperview()
-    }
-    
-    account.balances
-      .prefix(3)
-      .forEach { balancesStackView.addArrangedSubview(makeBalanceLabel(for: $0)) }
-  }
-  
-  private func makeBalanceLabel(for balance: Balance) -> UIView {
-    let amount = "\((balance.amount * 100).rounded(.toNearestOrEven) / 100)"
-    let view = UILabel()
-    view.text = balance.currency.code + " - " + amount
-    return view
-  }
-  
-  private func generateMenuForCurrencyButton(for account: Account, type: ExchangeType) {
-    let title = "Select Currency"
-    let children = account.balances.map { createMenuAction(for: $0, type: type) }
-    let menu = UIMenu(title: title, image: nil, identifier: nil, options: [], children: children)
-    
-    switch type {
-    case .sell:
-      sellCurrencyButton.menu = menu
-    case .buy:
-      buyCurrencyButton.menu = menu
-    }
-  }
-  
-  private func createMenuAction(for balance: Balance, type: ExchangeType) -> UIAction {
-    return UIAction(title: balance.currency.code) { [weak self] _ in
-      guard let self = self else { return }
-      self.didSelect(balance: balance, type: type)
-    }
-  }
-  
+  // MARK: - Handlers
   private func didSelect(balance: Balance, type: ExchangeType) {
     switch type {
     case .sell:
@@ -247,13 +240,10 @@ class ConverterViewController: UIViewController {
   }
   
   private func showSaveAlert(result: ConversionResult) {
-    let title = "Currency Converted"
-    var message = "You have converted \(result.sellAmount) \(result.fromCurrency.code) to \(result.buyAmount) \(result.toCurrency.code)."
-    if result.exchangeFee != .zero {
-      message += " Commission Fee - \(result.exchangeFee) \(result.fromCurrency.code)"
-    }
-    
-    let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    let alertController = UIAlertController(
+      title: result.alertTitle,
+      message: result.alertMessage,
+      preferredStyle: .alert)
     let okAction = UIAlertAction(title: "OK", style: .default)
     alertController.addAction(okAction)
     

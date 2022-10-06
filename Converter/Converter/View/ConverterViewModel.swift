@@ -70,6 +70,7 @@ class ConverterViewModel {
   
   func saveExchange() {
     sellBalance.amount -= sellExchanged + exchangeFee
+    sellBalance.fee += exchangeFee
     buyBalance.amount += buyExchanged
     
     didLoadAccount?(account)
@@ -81,6 +82,8 @@ class ConverterViewModel {
     guard let conversionResult = conversionResult else { return }
     showAlert?(conversionResult)
     postLoadUpdate(exchanged: buyExchanged)
+    
+    print("Account total fee: - ", sellBalance.fee, " ", sellBalance.currency.code)
   }
   
   private func loadExchage() {
@@ -92,15 +95,13 @@ class ConverterViewModel {
     }
     
     Task {
-      let exchanged = await service.exchange(
+      buyExchanged = await service.exchange(
         amount: sellExchanged,
         fromCurrency: sellBalance.currency.code,
         toCurrency: buyBalance.currency.code)
       
-      buyExchanged = exchanged
-      
       DispatchQueue.main.async {
-        self.postLoadUpdate(exchanged: exchanged)
+        self.postLoadUpdate(exchanged: self.buyExchanged)
       }
     }
   }
@@ -138,4 +139,29 @@ struct ConversionResult {
   var fromCurrency: Currency
   var toCurrency: Currency
   var exchangeFee: Double
+  
+  func generateText() -> String {
+    if sellAmount == 0 {
+      return ""
+    } else {
+      let sellText = "Sell: \(sellAmount) \(fromCurrency.code) | "
+      let receiveText = "Receive: \(buyAmount) \(toCurrency.code)"
+      let feeText = exchangeFee != 0 ? "\nFee: \(exchangeFee) \(fromCurrency.code)" : ""
+      
+      return sellText + receiveText + feeText
+    }
+  }
+  
+  var alertTitle: String {
+    return "Currency Converted"
+  }
+  
+  var alertMessage: String {
+    var message = "You have converted \(sellAmount) \(fromCurrency.code) to \(buyAmount) \(toCurrency.code)."
+    if exchangeFee != .zero {
+      message += " Commission Fee - \(exchangeFee) \(fromCurrency.code)"
+    }
+    
+    return message
+  }
 }
