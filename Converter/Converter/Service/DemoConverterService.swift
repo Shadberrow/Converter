@@ -9,9 +9,11 @@ import Foundation
 
 class DemoConverterService: ConverterServiceType {
   
-  let dataStore: AccountDataStoreType
+  private let apiClient: ApiClientType
+  private let dataStore: AccountDataStoreType
   
-  init(dataStore: AccountDataStoreType) {
+  init(apiClient: ApiClientType, dataStore: AccountDataStoreType) {
+    self.apiClient = apiClient
     self.dataStore = dataStore
   }
   
@@ -19,7 +21,8 @@ class DemoConverterService: ConverterServiceType {
     return dataStore.loadAccount()
   }
   
-  func exchange(amount: Double, fromCurrency: String, toCurrency: String) -> Double {
-    return 104
+  func exchange(amount: Double, fromCurrency: String, toCurrency: String) async -> Double {
+    let amount = try? await apiClient.exchange(amount: amount, fromCurrency: fromCurrency, toCurrency: toCurrency).amount
+    return ((amount ?? "") as NSString).doubleValue
   }
 }

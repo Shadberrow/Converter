@@ -57,14 +57,19 @@ class ConverterViewModel {
     let amount = (input as NSString).doubleValue
     sellExchanged = amount
     
-    let exchanged = service.exchange(
-      amount: amount,
-      fromCurrency: sellBalance.currency.code,
-      toCurrency: buyBalance.currency.code
-    )
-    
-    buyExchanged = exchanged
-    buyAmount?(exchanged)
+    Task {
+      let exchanged = await service.exchange(
+        amount: amount,
+        fromCurrency: sellBalance.currency.code,
+        toCurrency: buyBalance.currency.code
+      )
+      
+      buyExchanged = exchanged
+      
+      DispatchQueue.main.async {
+        self.buyAmount?(exchanged)
+      }
+    }
   }
   
   func saveExchange() {

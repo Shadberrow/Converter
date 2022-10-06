@@ -8,5 +8,5 @@
 import Foundation
 
 protocol ApiClientType {
-  
+  func exchange(amount: Double, fromCurrency: String, toCurrency: String) async throws -> ExchangeResult
 }

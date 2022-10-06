@@ -9,5 +9,5 @@ import Foundation
 
 protocol ConverterServiceType {
   func loadAccount() -> Account
-  func exchange(amount: Double, fromCurrency: String, toCurrency: String) -> Double
+  func exchange(amount: Double, fromCurrency: String, toCurrency: String) async -> Double
 }

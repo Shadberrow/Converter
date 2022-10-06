@@ -43,6 +43,9 @@ final class AppDependencyContainer {
   }
   
   func makeConverterService() -> ConverterServiceType {
-    return DemoConverterService(dataStore: sharedAccountDataStore)
+    return DemoConverterService(
+      apiClient: sharedApiClient,
+      dataStore: sharedAccountDataStore
+    )
   }
 }
