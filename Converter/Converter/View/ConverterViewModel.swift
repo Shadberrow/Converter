@@ -18,6 +18,8 @@ class ConverterViewModel {
   
   private var sellBalance: Balance!
   private var buyBalance: Balance!
+  private var sellExchanged: Double = 0
+  private var buyExchanged: Double = 0
   
   let service: ConverterServiceType
   
@@ -53,6 +55,7 @@ class ConverterViewModel {
   func sellInputChanged(input: String?) {
     guard let input = input else { return }
     let amount = (input as NSString).doubleValue
+    sellExchanged = amount
     
     let exchanged = service.exchange(
       amount: amount,
@@ -60,10 +63,14 @@ class ConverterViewModel {
       toCurrency: buyBalance.currency.code
     )
     
+    buyExchanged = exchanged
     buyAmount?(exchanged)
   }
   
   func saveExchange() {
+    sellBalance.amount -= sellExchanged
+    buyBalance.amount += buyExchanged
     
+    didLoadAccount?(account)
   }
 }

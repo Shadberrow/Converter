@@ -184,12 +184,12 @@ class ConverterViewController: UIViewController {
   }
   
   private func didSelect(balance: Balance, type: ExchangeType) {
-    viewModel.setSellBalance(balance)
-    
     switch type {
     case .sell:
+      viewModel.setSellBalance(balance)
       sellCurrencyButton.setTitle(balance.currency.code, for: .normal)
     case .buy:
+      viewModel.setBuyBalance(balance)
       buyCurrencyButton.setTitle(balance.currency.code, for: .normal)
     }
   }
