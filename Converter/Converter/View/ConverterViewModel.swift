@@ -15,6 +15,7 @@ class ConverterViewModel {
   var sellCurrency: ((Currency) -> Void)?
   var buyCurrency: ((Currency) -> Void)?
   var buyAmount: ((Double) -> Void)?
+  var isSaveEnabled: ((Bool) -> Void)?
   
   private var sellBalance: Balance!
   private var buyBalance: Balance!
@@ -57,7 +58,7 @@ class ConverterViewModel {
   func sellInputChanged(input: String?) {
     guard let input = input else { return }
     let amount = (input as NSString).doubleValue
-    sellExchanged = amount
+    sellExchanged = (amount * 100).rounded(.toNearestOrEven) / 100
     loadExchage()
   }
   
@@ -66,6 +67,7 @@ class ConverterViewModel {
     buyBalance.amount += buyExchanged
     
     didLoadAccount?(account)
+    checkSaveEnabledState()
   }
   
   private func loadExchage() {
@@ -79,8 +81,13 @@ class ConverterViewModel {
       buyExchanged = exchanged
       
       DispatchQueue.main.async {
+        self.checkSaveEnabledState()
         self.buyAmount?(exchanged)
       }
     }
+  }
+  
+  private func checkSaveEnabledState() {
+    isSaveEnabled?(sellBalance.amount >= sellExchanged && sellBalance.amount != 0)
   }
 }

@@ -144,6 +144,10 @@ class ConverterViewController: UIViewController {
       self?.buyCurrencyTextField.text = "\(exchanged)"
     }
     
+    viewModel.isSaveEnabled = { [weak self] isEnabled in
+      self?.saveButton.isEnabled = isEnabled
+    }
+    
     viewModel.loadData()
   }
   
@@ -158,8 +162,9 @@ class ConverterViewController: UIViewController {
   }
   
   private func makeBalanceLabel(for balance: Balance) -> UIView {
+    let amount = "\((balance.amount * 100).rounded(.toNearestOrEven) / 100)"
     let view = UILabel()
-    view.text = balance.currency.code + " - " + "\(balance.amount)"
+    view.text = balance.currency.code + " - " + amount
     return view
   }
   
