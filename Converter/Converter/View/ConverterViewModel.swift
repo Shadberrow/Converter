@@ -42,11 +42,13 @@ class ConverterViewModel {
       let buyBalance = account.balances.first(where: { $0.currency == account.defauleBuyCurrency })
     else { return }
     
-    setSellBalance(sellBalance)
-    setBuyBalance(buyBalance)
+    self.sellBalance = sellBalance
+    self.buyBalance = buyBalance
     
     sellCurrency?(sellBalance.currency)
     buyCurrency?(buyBalance.currency)
+    
+    checkSaveEnabledState()
   }
   
   func setSellBalance(_ balance: Balance) {
@@ -78,10 +80,17 @@ class ConverterViewModel {
     
     guard let conversionResult = conversionResult else { return }
     showAlert?(conversionResult)
-    postLoadUpdate()
+    postLoadUpdate(exchanged: buyExchanged)
   }
   
   private func loadExchage() {
+    guard sellBalance != nil && buyBalance != nil else { return }
+    
+    guard sellExchanged != 0 else {
+      postLoadUpdate(exchanged: 0)
+      return
+    }
+    
     Task {
       let exchanged = await service.exchange(
         amount: sellExchanged,
@@ -91,13 +100,13 @@ class ConverterViewModel {
       buyExchanged = exchanged
       
       DispatchQueue.main.async {
-        self.buyAmount?(exchanged)
-        self.postLoadUpdate()
+        self.postLoadUpdate(exchanged: exchanged)
       }
     }
   }
   
-  private func postLoadUpdate() {
+  private func postLoadUpdate(exchanged: Double) {
+    buyAmount?(exchanged)
     exchangeFee = service.getFee(exchangeAmount: sellExchanged)
     
     checkSaveEnabledState()
@@ -108,7 +117,11 @@ class ConverterViewModel {
   }
   
   private func checkSaveEnabledState() {
-    isSaveEnabled?(sellBalance.amount >= (sellExchanged + exchangeFee) && sellBalance.amount != 0)
+    let hasFunds = sellBalance.amount != 0
+    let canSell = sellBalance.amount >= (sellExchanged + exchangeFee)
+    let sellIsNotEmpty = sellExchanged != 0
+    
+    isSaveEnabled?(hasFunds && canSell && sellIsNotEmpty)
   }
   
   private func updateConversionResult() {

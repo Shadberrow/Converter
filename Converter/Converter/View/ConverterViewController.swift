@@ -78,8 +78,8 @@ class ConverterViewController: UIViewController {
     
     activityIndicatorView = UIActivityIndicatorView()
     activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-    activityIndicatorView.isHidden = true
     activityIndicatorView.startAnimating()
+    activityIndicatorView.isHidden = true
     
     saveButton = UIButton(type: .system)
     saveButton.translatesAutoresizingMaskIntoConstraints = false
@@ -183,11 +183,16 @@ class ConverterViewController: UIViewController {
     
     viewModel.resultDidChange = { [weak self] result in
       guard let self = self else { return }
-      let feeText = result.exchangeFee != 0 ? "\nFee: \(result.exchangeFee) \(result.fromCurrency.code)" : ""
       
-      self.descriptionLabel.text = "Sell: \(result.sellAmount) \(result.fromCurrency.code) | "
-      + "Receive: \(result.buyAmount) \(result.toCurrency.code)"
-      + feeText
+      if result.sellAmount == 0 {
+        self.descriptionLabel.text = ""
+      } else {
+        let feeText = result.exchangeFee != 0 ? "\nFee: \(result.exchangeFee) \(result.fromCurrency.code)" : ""
+        
+        self.descriptionLabel.text = "Sell: \(result.sellAmount) \(result.fromCurrency.code) | "
+        + "Receive: \(result.buyAmount) \(result.toCurrency.code)"
+        + feeText
+      }
     }
     
     viewModel.loadData()
