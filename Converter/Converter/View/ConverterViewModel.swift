@@ -21,6 +21,7 @@ class ConverterViewModel {
   private var buyBalance: Balance!
   private var sellExchanged: Double = 0
   private var buyExchanged: Double = 0
+  private var exchangeFee: Double = 0
   
   let service: ConverterServiceType
   
@@ -63,11 +64,14 @@ class ConverterViewModel {
   }
   
   func saveExchange() {
-    sellBalance.amount -= sellExchanged
+    exchangeFee = service.getFee(exchangeAmount: sellExchanged)
+    
+    sellBalance.amount -= sellExchanged + exchangeFee
     buyBalance.amount += buyExchanged
     
     didLoadAccount?(account)
     checkSaveEnabledState()
+    service.incrementConversionsCount()
   }
   
   private func loadExchage() {
@@ -88,6 +92,6 @@ class ConverterViewModel {
   }
   
   private func checkSaveEnabledState() {
-    isSaveEnabled?(sellBalance.amount >= sellExchanged && sellBalance.amount != 0)
+    isSaveEnabled?(sellBalance.amount >= (sellExchanged + exchangeFee) && sellBalance.amount != 0)
   }
 }

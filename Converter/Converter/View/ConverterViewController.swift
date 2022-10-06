@@ -20,6 +20,8 @@ class ConverterViewController: UIViewController {
   private var buyCurrencyButton: UIButton!
   private var buyCurrencyTextField: UITextField!
   
+  private var activityIndicatorView: UIActivityIndicatorView!
+  
   private var saveButton: UIButton!
   
   // MARK: - Lifecycle
@@ -73,6 +75,11 @@ class ConverterViewController: UIViewController {
     buyCurrencyTextField.isUserInteractionEnabled = false
     buyCurrencyTextField.textAlignment = .center
     
+    activityIndicatorView = UIActivityIndicatorView()
+    activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+    activityIndicatorView.isHidden = true
+    activityIndicatorView.startAnimating()
+    
     saveButton = UIButton(type: .system)
     saveButton.translatesAutoresizingMaskIntoConstraints = false
     saveButton.setTitle("Save", for: .normal)
@@ -88,6 +95,7 @@ class ConverterViewController: UIViewController {
     view.addSubview(sellCurrencyTextField)
     view.addSubview(buyCurrencyButton)
     view.addSubview(buyCurrencyTextField)
+    view.addSubview(activityIndicatorView)
     view.addSubview(saveButton)
   }
   
@@ -117,6 +125,9 @@ class ConverterViewController: UIViewController {
       buyCurrencyTextField.trailingAnchor.constraint(equalTo: buyCurrencyButton.trailingAnchor),
       buyCurrencyTextField.heightAnchor.constraint(equalToConstant: 45),
       
+      activityIndicatorView.centerXAnchor.constraint(equalTo: buyCurrencyTextField.centerXAnchor),
+      activityIndicatorView.centerYAnchor.constraint(equalTo: buyCurrencyTextField.centerYAnchor),
+      
       saveButton.topAnchor.constraint(equalTo: sellCurrencyTextField.bottomAnchor, constant: 28),
       saveButton.leadingAnchor.constraint(equalTo: balancesStackView.leadingAnchor),
       saveButton.trailingAnchor.constraint(equalTo: balancesStackView.trailingAnchor),
@@ -141,6 +152,8 @@ class ConverterViewController: UIViewController {
     }
     
     viewModel.buyAmount = { [weak self] exchanged in
+      self?.buyCurrencyTextField.isHidden = false
+      self?.activityIndicatorView.isHidden = true
       self?.buyCurrencyTextField.text = "\(exchanged)"
     }
     
@@ -199,6 +212,8 @@ class ConverterViewController: UIViewController {
   }
   
   @objc private func handleTextInput(_ sender: UITextField) {
+    buyCurrencyTextField.isHidden = true
+    activityIndicatorView.isHidden = false
     viewModel.sellInputChanged(input: sender.text)
   }
   
