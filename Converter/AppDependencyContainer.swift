@@ -54,7 +54,6 @@ final class AppDependencyContainer {
     return DemoConverterService(
       apiClient: sharedApiClient,
       dataStore: sharedAccountDataStore,
-      feeCalculator: sharedExchangeFeeCalculator
-    )
+      feeCalculator: sharedExchangeFeeCalculator)
   }
 }

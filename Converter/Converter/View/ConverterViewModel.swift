@@ -67,8 +67,6 @@ class ConverterViewModel {
   }
   
   func saveExchange() {
-    exchangeFee = service.getFee(exchangeAmount: sellExchanged)
-    
     sellBalance.amount -= sellExchanged + exchangeFee
     buyBalance.amount += buyExchanged
     
@@ -80,7 +78,7 @@ class ConverterViewModel {
     
     guard let conversionResult = conversionResult else { return }
     showAlert?(conversionResult)
-    loadExchage()
+    postLoadUpdate()
   }
   
   private func loadExchage() {
@@ -88,21 +86,25 @@ class ConverterViewModel {
       let exchanged = await service.exchange(
         amount: sellExchanged,
         fromCurrency: sellBalance.currency.code,
-        toCurrency: buyBalance.currency.code
-      )
+        toCurrency: buyBalance.currency.code)
       
-      exchangeFee = service.getFee(exchangeAmount: sellExchanged)
       buyExchanged = exchanged
       
       DispatchQueue.main.async {
-        self.checkSaveEnabledState()
         self.buyAmount?(exchanged)
-        
-        self.updateConversionResult()
-        guard let conversionResult = self.conversionResult else { return }
-        self.resultDidChange?(conversionResult)
+        self.postLoadUpdate()
       }
     }
+  }
+  
+  private func postLoadUpdate() {
+    exchangeFee = service.getFee(exchangeAmount: sellExchanged)
+    
+    checkSaveEnabledState()
+    updateConversionResult()
+    
+    guard let conversionResult = conversionResult else { return }
+    resultDidChange?(conversionResult)
   }
   
   private func checkSaveEnabledState() {
@@ -113,8 +115,7 @@ class ConverterViewModel {
     conversionResult = ConversionResult(
       sellAmount: sellExchanged, buyAmount: buyExchanged,
       fromCurrency: sellBalance.currency, toCurrency: buyBalance.currency,
-      exchangeFee: exchangeFee
-    )
+      exchangeFee: exchangeFee)
   }
 }
 

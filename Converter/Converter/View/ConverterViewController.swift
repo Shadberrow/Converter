@@ -148,37 +148,44 @@ class ConverterViewController: UIViewController {
   // MARK: - ViewModel Bind
   private func bind() {
     viewModel.didLoadAccount = { [weak self] account in
-      self?.generateBalancesView(for: account)
-      self?.generateMenuForCurrencyButton(for: account, type: .sell)
-      self?.generateMenuForCurrencyButton(for: account, type: .buy)
+      guard let self = self else { return }
+      self.generateBalancesView(for: account)
+      self.generateMenuForCurrencyButton(for: account, type: .sell)
+      self.generateMenuForCurrencyButton(for: account, type: .buy)
     }
     
     viewModel.sellCurrency = { [weak self] currency in
-      self?.sellCurrencyButton.setTitle(currency.code, for: .normal)
+      guard let self = self else { return }
+      self.sellCurrencyButton.setTitle(currency.code, for: .normal)
     }
     
     viewModel.buyCurrency = { [weak self] currency in
-      self?.buyCurrencyButton.setTitle(currency.code, for: .normal)
+      guard let self = self else { return }
+      self.buyCurrencyButton.setTitle(currency.code, for: .normal)
     }
     
     viewModel.buyAmount = { [weak self] exchanged in
-      self?.buyCurrencyTextField.isHidden = false
-      self?.activityIndicatorView.isHidden = true
-      self?.buyCurrencyTextField.text = "\(exchanged)"
+      guard let self = self else { return }
+      self.buyCurrencyTextField.isHidden = false
+      self.activityIndicatorView.isHidden = true
+      self.buyCurrencyTextField.text = "\(exchanged)"
     }
     
     viewModel.isSaveEnabled = { [weak self] isEnabled in
-      self?.saveButton.isEnabled = isEnabled
+      guard let self = self else { return }
+      self.saveButton.isEnabled = isEnabled
     }
     
     viewModel.showAlert = { [weak self] result in
-      self?.showSaveAlert(result: result)
+      guard let self = self else { return }
+      self.showSaveAlert(result: result)
     }
     
     viewModel.resultDidChange = { [weak self] result in
+      guard let self = self else { return }
       let feeText = result.exchangeFee != 0 ? "\nFee: \(result.exchangeFee) \(result.fromCurrency.code)" : ""
       
-      self?.descriptionLabel.text = "Sell: \(result.sellAmount) \(result.fromCurrency.code) | "
+      self.descriptionLabel.text = "Sell: \(result.sellAmount) \(result.fromCurrency.code) | "
       + "Receive: \(result.buyAmount) \(result.toCurrency.code)"
       + feeText
     }
@@ -218,7 +225,8 @@ class ConverterViewController: UIViewController {
   
   private func createMenuAction(for balance: Balance, type: ExchangeType) -> UIAction {
     return UIAction(title: balance.currency.code) { [weak self] _ in
-      self?.didSelect(balance: balance, type: type)
+      guard let self = self else { return }
+      self.didSelect(balance: balance, type: type)
     }
   }
   
