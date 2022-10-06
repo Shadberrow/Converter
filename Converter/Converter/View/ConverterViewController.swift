@@ -68,25 +68,22 @@ class ConverterViewController: UIViewController {
   
   // MARK: - ViewModel Bind
   private func bind() {
-    guard let balances = viewModel.account?.balances else { return }
-    
-    balances
-      .prefix(3)
-      .forEach { balance in
-        balancesStackView.addArrangedSubview(makeBalanceLabel(for: balance))
-      }
-    
-    if let sellBalance = viewModel.sellBalance {
-      sellCurrencyButton.setTitle(sellBalance.currency.code, for: .normal)
+    viewModel.didLoadAccount = { [weak self] account in
+      self?.generateBalancesView(for: account)
+      self?.generateMenuForSellCurrencyButton(for: account)
     }
     
-    var menuActions: [UIAction] = []
-    balances
-      .forEach { balance in
-        menuActions.append(createMenuAction(for: balance))
-      }
+    viewModel.sellCurrency = { [weak self] currency in
+      self?.sellCurrencyButton.setTitle(currency.code, for: .normal)
+    }
     
-    sellCurrencyButton.menu = createMenuForSellCurrencyButton(actions: menuActions)
+    viewModel.loadData()
+  }
+  
+  private func generateBalancesView(for account: Account) {
+    account.balances
+      .prefix(3)
+      .forEach { balancesStackView.addArrangedSubview(makeBalanceLabel(for: $0)) }
   }
   
   private func makeBalanceLabel(for balance: Balance) -> UIView {
@@ -95,18 +92,21 @@ class ConverterViewController: UIViewController {
     return view
   }
   
+  private func generateMenuForSellCurrencyButton(for account: Account) {
+    let title = "Select Currency"
+    let children = account.balances.map { createMenuAction(for: $0) }
+    
+    sellCurrencyButton.menu = UIMenu(title: title, image: nil, identifier: nil, options: [], children: children)
+  }
+  
   private func createMenuAction(for balance: Balance) -> UIAction {
     return UIAction(title: balance.currency.code) { [weak self] _ in
       self?.didSelect(balance: balance)
     }
   }
   
-  private func createMenuForSellCurrencyButton(actions: [UIAction]) -> UIMenu {
-    UIMenu(title: "Select Currency", image: nil, identifier: nil, options: [], children: actions)
-  }
-  
   private func didSelect(balance: Balance) {
-    viewModel.sellBalance = balance
+    viewModel.setSellBalance(balance)
     sellCurrencyButton.setTitle(balance.currency.code, for: .normal)
   }
 }

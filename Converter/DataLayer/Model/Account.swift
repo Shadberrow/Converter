@@ -10,6 +10,9 @@ import Foundation
 class Account {
   var balances: [Balance]
   
+  var defauleSellCurrency: Currency = .USD
+  var defauleBuyCurrency: Currency = .EUR
+  
   init(balances: [Balance] = []) {
     self.balances = balances
   }

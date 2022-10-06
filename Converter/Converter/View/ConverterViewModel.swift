@@ -9,18 +9,29 @@ import Foundation
 
 class ConverterViewModel {
   
-  var account: Account?
-  var sellBalance: Balance?
+  private var account: Account!
+  
+  var didLoadAccount: ((Account) -> Void)?
+  var sellCurrency: ((Currency) -> Void)?
+  var buyCurrency: ((Currency) -> Void)?
+  
+  private var sellBalance: Balance!
   
   let service: ConverterServiceType
   
   init(servie: ConverterServiceType) {
     self.service = servie
-    loadData()
   }
   
-  private func loadData() {
+  func loadData() {
     account = service.loadAccount()
-    sellBalance = account?.balances.first
+    
+    didLoadAccount?(account)
+    sellCurrency?(account.defauleSellCurrency)
+    buyCurrency?(account.defauleBuyCurrency)
+  }
+  
+  func setSellBalance(_ balance: Balance) {
+    sellBalance = balance
   }
 }
