@@ -14,6 +14,7 @@ class ConverterViewController: UIViewController {
   
   // MARK: - Subviews
   private var balancesStackView: UIStackView!
+  private var sellCurrencyButton: UIButton!
   
   // MARK: - Lifecycle
   override func viewDidLoad() {
@@ -33,36 +34,79 @@ class ConverterViewController: UIViewController {
   
   private func setupSubviews() {
     balancesStackView = UIStackView()
-    balancesStackView.axis = .horizontal
     balancesStackView.translatesAutoresizingMaskIntoConstraints = false
+    balancesStackView.axis = .horizontal
     balancesStackView.backgroundColor = .orange
     balancesStackView.distribution = .equalCentering
+    
+    sellCurrencyButton = UIButton(type: .system)
+    sellCurrencyButton.translatesAutoresizingMaskIntoConstraints = false
+    sellCurrencyButton.backgroundColor = .systemPurple
+    sellCurrencyButton.layer.cornerRadius = 8
+    sellCurrencyButton.tintColor = .white
+    sellCurrencyButton.setTitle(" - ", for: .normal)
+    sellCurrencyButton.showsMenuAsPrimaryAction = true
   }
   
   private func setupHierarchy() {
     view.addSubview(balancesStackView)
+    view.addSubview(sellCurrencyButton)
   }
   
   private func setupConstraints() {
     NSLayoutConstraint.activate([
       balancesStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
       balancesStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-      balancesStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
+      balancesStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+      
+      sellCurrencyButton.topAnchor.constraint(equalTo: balancesStackView.bottomAnchor, constant: 28),
+      sellCurrencyButton.leadingAnchor.constraint(equalTo: balancesStackView.leadingAnchor),
+      sellCurrencyButton.widthAnchor.constraint(equalTo: balancesStackView.widthAnchor, multiplier: 0.35),
+      sellCurrencyButton.heightAnchor.constraint(equalToConstant: 45)
     ])
   }
   
   // MARK: - ViewModel Bind
   private func bind() {
-    viewModel.account?.balances
+    guard let balances = viewModel.account?.balances else { return }
+    
+    balances
       .prefix(3)
       .forEach { balance in
         balancesStackView.addArrangedSubview(makeBalanceLabel(for: balance))
       }
+    
+    if let sellBalance = viewModel.sellBalance {
+      sellCurrencyButton.setTitle(sellBalance.currency.code, for: .normal)
+    }
+    
+    var menuActions: [UIAction] = []
+    balances
+      .forEach { balance in
+        menuActions.append(createMenuAction(for: balance))
+      }
+    
+    sellCurrencyButton.menu = createMenuForSellCurrencyButton(actions: menuActions)
   }
   
   private func makeBalanceLabel(for balance: Balance) -> UIView {
     let view = UILabel()
     view.text = balance.currency.code + " - " + "\(balance.amount)"
     return view
+  }
+  
+  private func createMenuAction(for balance: Balance) -> UIAction {
+    return UIAction(title: balance.currency.code) { [weak self] _ in
+      self?.didSelect(balance: balance)
+    }
+  }
+  
+  private func createMenuForSellCurrencyButton(actions: [UIAction]) -> UIMenu {
+    UIMenu(title: "Select Currency", image: nil, identifier: nil, options: [], children: actions)
+  }
+  
+  private func didSelect(balance: Balance) {
+    viewModel.sellBalance = balance
+    sellCurrencyButton.setTitle(balance.currency.code, for: .normal)
   }
 }
