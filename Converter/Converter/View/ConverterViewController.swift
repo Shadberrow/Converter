@@ -20,6 +20,8 @@ class ConverterViewController: UIViewController {
   private var buyCurrencyButton: UIButton!
   private var buyCurrencyTextField: UITextField!
   
+  private var saveButton: UIButton!
+  
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -71,6 +73,14 @@ class ConverterViewController: UIViewController {
     buyCurrencyTextField.placeholder = "0.00"
     buyCurrencyTextField.isUserInteractionEnabled = false
     buyCurrencyTextField.textAlignment = .center
+    
+    saveButton = UIButton(type: .system)
+    saveButton.translatesAutoresizingMaskIntoConstraints = false
+    saveButton.setTitle("Save", for: .normal)
+    saveButton.addTarget(self, action: #selector(handleSaveTap), for: .touchUpInside)
+    saveButton.backgroundColor = .systemBlue
+    saveButton.tintColor = .white
+    saveButton.layer.cornerRadius = 8
   }
   
   private func setupHierarchy() {
@@ -79,6 +89,7 @@ class ConverterViewController: UIViewController {
     view.addSubview(sellCurrencyTextField)
     view.addSubview(buyCurrencyButton)
     view.addSubview(buyCurrencyTextField)
+    view.addSubview(saveButton)
   }
   
   private func setupConstraints() {
@@ -105,7 +116,12 @@ class ConverterViewController: UIViewController {
       buyCurrencyTextField.topAnchor.constraint(equalTo: buyCurrencyButton.bottomAnchor, constant: 8),
       buyCurrencyTextField.leadingAnchor.constraint(equalTo: buyCurrencyButton.leadingAnchor),
       buyCurrencyTextField.trailingAnchor.constraint(equalTo: buyCurrencyButton.trailingAnchor),
-      buyCurrencyTextField.heightAnchor.constraint(equalToConstant: 45)
+      buyCurrencyTextField.heightAnchor.constraint(equalToConstant: 45),
+      
+      saveButton.topAnchor.constraint(equalTo: sellCurrencyTextField.bottomAnchor, constant: 28),
+      saveButton.leadingAnchor.constraint(equalTo: balancesStackView.leadingAnchor),
+      saveButton.trailingAnchor.constraint(equalTo: balancesStackView.trailingAnchor),
+      saveButton.heightAnchor.constraint(equalToConstant: 45)
     ])
   }
   
@@ -180,6 +196,10 @@ class ConverterViewController: UIViewController {
   
   @objc private func handleTextInput(_ sender: UITextField) {
     viewModel.sellInputChanged(input: sender.text)
+  }
+  
+  @objc private func handleSaveTap() {
+    viewModel.saveExchange()
   }
 }
 

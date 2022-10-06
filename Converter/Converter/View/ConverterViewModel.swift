@@ -62,4 +62,8 @@ class ConverterViewModel {
     
     buyAmount?(exchanged)
   }
+  
+  func saveExchange() {
+    
+  }
 }
