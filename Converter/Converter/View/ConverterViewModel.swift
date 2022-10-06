@@ -16,6 +16,7 @@ class ConverterViewModel {
   var buyCurrency: ((Currency) -> Void)?
   var buyAmount: ((Double) -> Void)?
   var isSaveEnabled: ((Bool) -> Void)?
+  var showAlert: ((ConversionResult) -> Void)?
   
   private var sellBalance: Balance!
   private var buyBalance: Balance!
@@ -72,6 +73,13 @@ class ConverterViewModel {
     didLoadAccount?(account)
     checkSaveEnabledState()
     service.incrementConversionsCount()
+    
+    let conversionResult = ConversionResult(
+      sellAmount: sellExchanged, buyAmount: buyExchanged,
+      fromCurrency: sellBalance.currency, toCurrency: buyBalance.currency,
+      exchangeFee: exchangeFee
+    )
+    showAlert?(conversionResult)
   }
   
   private func loadExchage() {
@@ -94,4 +102,12 @@ class ConverterViewModel {
   private func checkSaveEnabledState() {
     isSaveEnabled?(sellBalance.amount >= (sellExchanged + exchangeFee) && sellBalance.amount != 0)
   }
+}
+
+struct ConversionResult {
+  var sellAmount: Double
+  var buyAmount: Double
+  var fromCurrency: Currency
+  var toCurrency: Currency
+  var exchangeFee: Double
 }

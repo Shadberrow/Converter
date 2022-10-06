@@ -48,7 +48,7 @@ class ConverterViewController: UIViewController {
     
     sellCurrencyButton = UIButton(type: .system)
     sellCurrencyButton.translatesAutoresizingMaskIntoConstraints = false
-    sellCurrencyButton.backgroundColor = .systemPurple
+    sellCurrencyButton.backgroundColor = .systemBlue
     sellCurrencyButton.layer.cornerRadius = 8
     sellCurrencyButton.tintColor = .white
     sellCurrencyButton.setTitle(" - ", for: .normal)
@@ -57,13 +57,13 @@ class ConverterViewController: UIViewController {
     sellCurrencyTextField = UITextField()
     sellCurrencyTextField.translatesAutoresizingMaskIntoConstraints = false
     sellCurrencyTextField.placeholder = "0.00"
-    sellCurrencyTextField.keyboardType = .numberPad
+    sellCurrencyTextField.keyboardType = .decimalPad
     sellCurrencyTextField.textAlignment = .center
     sellCurrencyTextField.addTarget(self, action: #selector(handleTextInput), for: .editingChanged)
     
     buyCurrencyButton = UIButton(type: .system)
     buyCurrencyButton.translatesAutoresizingMaskIntoConstraints = false
-    buyCurrencyButton.backgroundColor = .systemPurple
+    buyCurrencyButton.backgroundColor = .systemBlue
     buyCurrencyButton.layer.cornerRadius = 8
     buyCurrencyButton.tintColor = .white
     buyCurrencyButton.setTitle(" - ", for: .normal)
@@ -161,6 +161,10 @@ class ConverterViewController: UIViewController {
       self?.saveButton.isEnabled = isEnabled
     }
     
+    viewModel.showAlert = { [weak self] result in
+      self?.showSaveAlert(result: result)
+    }
+    
     viewModel.loadData()
   }
   
@@ -209,6 +213,20 @@ class ConverterViewController: UIViewController {
       viewModel.setBuyBalance(balance)
       buyCurrencyButton.setTitle(balance.currency.code, for: .normal)
     }
+  }
+  
+  private func showSaveAlert(result: ConversionResult) {
+    let title = "Currency Converted"
+    var message = "You have converted \(result.sellAmount) \(result.fromCurrency.code) to \(result.buyAmount) \(result.toCurrency.code)."
+    if result.exchangeFee != .zero {
+      message += " Commission Fee - \(result.exchangeFee) \(result.fromCurrency.code)"
+    }
+    
+    let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default)
+    alertController.addAction(okAction)
+    
+    present(alertController, animated: true)
   }
   
   @objc private func handleTextInput(_ sender: UITextField) {
