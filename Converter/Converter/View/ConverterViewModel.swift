@@ -29,8 +29,17 @@ class ConverterViewModel {
     account = service.loadAccount()
     
     didLoadAccount?(account)
-    sellCurrency?(account.defauleSellCurrency)
-    buyCurrency?(account.defauleBuyCurrency)
+    
+    guard
+      let sellBalance = account.balances.first(where: { $0.currency == account.defauleSellCurrency }),
+      let buyBalance = account.balances.first(where: { $0.currency == account.defauleBuyCurrency })
+    else { return }
+    
+    setSellBalance(sellBalance)
+    setBuyBalance(buyBalance)
+    
+    sellCurrency?(sellBalance.currency)
+    buyCurrency?(buyBalance.currency)
   }
   
   func setSellBalance(_ balance: Balance) {
@@ -48,7 +57,7 @@ class ConverterViewModel {
     let exchanged = service.exchange(
       amount: amount,
       fromCurrency: sellBalance.currency.code,
-      toCurrency: account.defauleBuyCurrency.code
+      toCurrency: buyBalance.currency.code
     )
     
     buyAmount?(exchanged)
