@@ -11,6 +11,7 @@ final class AppDependencyContainer {
   
   let sharedApiClient: ApiClientType
   let sharedAccountDataStore: AccountDataStoreType
+  let sharedExchangeFeeCalculator: ExchangeFeeCalculator
   
   init() {
     func makeApiClient() -> ApiClientType {
@@ -21,8 +22,15 @@ final class AppDependencyContainer {
       return DemoAccountDataStore()
     }
     
+    func makeExchangeFeeCalculator() -> ExchangeFeeCalculator {
+      let calculator = ExchangeFeeCalculator()
+        .addRules(.standardFee(percent: 0.7), .firstNFree(count: 3))
+      return calculator
+    }
+    
     self.sharedApiClient = makeApiClient()
     self.sharedAccountDataStore = makeAccountDataStore()
+    self.sharedExchangeFeeCalculator = makeExchangeFeeCalculator()
   }
   
   func makeRootViewController() -> UIViewController {
@@ -45,7 +53,8 @@ final class AppDependencyContainer {
   func makeConverterService() -> ConverterServiceType {
     return DemoConverterService(
       apiClient: sharedApiClient,
-      dataStore: sharedAccountDataStore
+      dataStore: sharedAccountDataStore,
+      feeCalculator: sharedExchangeFeeCalculator
     )
   }
 }

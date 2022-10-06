@@ -10,17 +10,21 @@ import Foundation
 final class ExchangeFeeCalculator {
   
   private var rules = [FeeRule]()
+  private var exchangeAmount: Double = 0
+  private var conversionsCount: UInt = 0
   
-  let exchangeAmount: Double
-  let conversionsCount: UInt
-  
-  init(exchangeAmount: Double, conversionsCount: UInt) {
-    self.exchangeAmount = exchangeAmount
-    self.conversionsCount = conversionsCount
+  func addRules(_ rules: FeeRule...) -> Self {
+    self.rules.append(contentsOf: rules)
+    return self
   }
   
-  func addRule(_ rule: FeeRule...) -> ExchangeFeeCalculator {
-    rules.append(contentsOf: rule)
+  func setExchangeAmount(amount: Double) -> Self {
+    self.exchangeAmount = amount
+    return self
+  }
+  
+  func setConversionsCount(count: UInt) -> Self {
+    self.conversionsCount = count
     return self
   }
   
@@ -35,7 +39,7 @@ final class ExchangeFeeCalculator {
   }
 }
 
-enum FeeRule {
+enum FeeRule: Equatable {
   case standardFee(percent: Double)
   case firstNFree(count: UInt)
   case everyNFree(number: UInt)

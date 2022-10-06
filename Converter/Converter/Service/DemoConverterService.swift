@@ -11,12 +11,14 @@ class DemoConverterService: ConverterServiceType {
   
   private let apiClient: ApiClientType
   private let dataStore: AccountDataStoreType
+  private let feeCalculator: ExchangeFeeCalculator
   
   private var conversionsCount: UInt = 0
   
-  init(apiClient: ApiClientType, dataStore: AccountDataStoreType) {
+  init(apiClient: ApiClientType, dataStore: AccountDataStoreType, feeCalculator: ExchangeFeeCalculator) {
     self.apiClient = apiClient
     self.dataStore = dataStore
+    self.feeCalculator = feeCalculator
   }
   
   func loadAccount() -> Account {
@@ -29,8 +31,9 @@ class DemoConverterService: ConverterServiceType {
   }
   
   func getFee(exchangeAmount: Double) -> Double {
-    return ExchangeFeeCalculator(exchangeAmount: exchangeAmount, conversionsCount: conversionsCount)
-      .addRule(.standardFee(percent: 0.7), .firstNFree(count: 5))
+    return feeCalculator
+      .setExchangeAmount(amount: exchangeAmount)
+      .setConversionsCount(count: conversionsCount)
       .getFee()
   }
   
