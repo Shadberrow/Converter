@@ -42,7 +42,6 @@ class ConverterViewController: UIViewController {
     balancesStackView = UIStackView()
     balancesStackView.translatesAutoresizingMaskIntoConstraints = false
     balancesStackView.axis = .horizontal
-    balancesStackView.backgroundColor = .orange
     balancesStackView.distribution = .equalCentering
     
     sellCurrencyButton = UIButton(type: .system)

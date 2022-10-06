@@ -20,6 +20,8 @@ class DemoApiClient: ApiClientType {
       throw ApiError.badURL
     }
     
+    print(url.absoluteString)
+    
     let (data, _) = try await session.data(from: url)
     let decoder = JSONDecoder()
     return try decoder.decode(ExchangeResult.self, from: data)

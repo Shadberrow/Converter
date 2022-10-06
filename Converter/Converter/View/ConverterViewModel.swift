@@ -46,20 +46,32 @@ class ConverterViewModel {
   
   func setSellBalance(_ balance: Balance) {
     sellBalance = balance
+    loadExchage()
   }
   
   func setBuyBalance(_ balance: Balance) {
     buyBalance = balance
+    loadExchage()
   }
   
   func sellInputChanged(input: String?) {
     guard let input = input else { return }
     let amount = (input as NSString).doubleValue
     sellExchanged = amount
+    loadExchage()
+  }
+  
+  func saveExchange() {
+    sellBalance.amount -= sellExchanged
+    buyBalance.amount += buyExchanged
     
+    didLoadAccount?(account)
+  }
+  
+  private func loadExchage() {
     Task {
       let exchanged = await service.exchange(
-        amount: amount,
+        amount: sellExchanged,
         fromCurrency: sellBalance.currency.code,
         toCurrency: buyBalance.currency.code
       )
@@ -70,12 +82,5 @@ class ConverterViewModel {
         self.buyAmount?(exchanged)
       }
     }
-  }
-  
-  func saveExchange() {
-    sellBalance.amount -= sellExchanged
-    buyBalance.amount += buyExchanged
-    
-    didLoadAccount?(account)
   }
 }
